@@ -47,7 +47,7 @@ English：[`README.md`](./README.md)
 1. 使用 GitHub 登录并授权
 2. 登录 Cloudflare 账户
 3. **重要**：设置 `JWT_SECRET` 为强随机字符串（推荐使用 `openssl rand -hex 32` 生成）
-4. KV 存储和 R2 存储桶将自动创建
+4. D1 数据库和 R2 存储桶将自动创建
 5. 点击 Deploy 等待部署完成
 6. 部署完成后，先打开 Cloudflare 给你的 Workers 链接（也就是你的服务地址），在网页上填写信息完成注册。
 
@@ -81,7 +81,7 @@ npm run dev
 ## 技术栈
 
 - **运行环境**：Cloudflare Workers
-- **数据存储**：Cloudflare KV
+- **数据存储**：Cloudflare D1（SQLite）
 - **文件存储**：Cloudflare R2
 - **开发语言**：TypeScript
 - **加密算法**：客户端 AES-256-CBC，JWT 使用 HS256

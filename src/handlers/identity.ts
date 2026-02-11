@@ -28,8 +28,8 @@ export async function handleToken(request: Request, env: Env): Promise<Response>
     const passwordHash = body.password;
 
     if (!email || !passwordHash) {
-  // Bitwarden clients expect OAuth-style error fields.
-  return identityErrorResponse('Email and password are required', 'invalid_request', 400);
+      // Bitwarden clients expect OAuth-style error fields.
+      return identityErrorResponse('Email and password are required', 'invalid_request', 400);
     }
 
     const user = await storage.getUser(email);
@@ -93,7 +93,9 @@ export async function handleToken(request: Request, env: Env): Promise<Response>
             Parallelism: user.kdfParallelism || null,
           },
           MasterKeyEncryptedUserKey: user.key,
+          MasterKeyWrappedUserKey: user.key,
           Salt: email, // email is already lowercased above
+          Object: 'masterPasswordUnlock',
         },
       },
     };
@@ -144,7 +146,9 @@ export async function handleToken(request: Request, env: Env): Promise<Response>
             Parallelism: user.kdfParallelism || null,
           },
           MasterKeyEncryptedUserKey: user.key,
+          MasterKeyWrappedUserKey: user.key,
           Salt: user.email.toLowerCase(),
+          Object: 'masterPasswordUnlock',
         },
       },
     };

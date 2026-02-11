@@ -1,20 +1,7 @@
-import { Env, SyncResponse, CipherResponse, FolderResponse, ProfileResponse, Attachment } from '../types';
+import { Env, SyncResponse, CipherResponse, FolderResponse, ProfileResponse } from '../types';
 import { StorageService } from '../services/storage';
 import { jsonResponse, errorResponse } from '../utils/response';
-
-// Format attachments for API response
-function formatAttachments(attachments: Attachment[]): any[] | null {
-  if (attachments.length === 0) return null;
-  return attachments.map(a => ({
-    id: a.id,
-    fileName: a.fileName,
-    size: Number(a.size) || 0,  // Android expects Int, not String
-    sizeName: a.sizeName,
-    key: a.key,
-    url: `/api/ciphers/${a.cipherId}/attachment/${a.id}`,  // Android requires non-null url!
-    object: 'attachment',
-  }));
-}
+import { cipherToResponse } from './ciphers';
 
 // GET /api/sync
 export async function handleSync(request: Request, env: Env, userId: string): Promise<Response> {
@@ -57,40 +44,8 @@ export async function handleSync(request: Request, env: Env, userId: string): Pr
   const cipherResponses: CipherResponse[] = [];
   for (const cipher of ciphers) {
     const attachments = await storage.getAttachmentsByCipher(cipher.id);
-    cipherResponses.push({
-      id: cipher.id,
-      organizationId: null,
-      folderId: cipher.folderId,
-      type: Number(cipher.type) || 1,
-      name: cipher.name,
-      notes: cipher.notes,
-      favorite: cipher.favorite,
-      login: cipher.login,
-      card: cipher.card,
-      identity: cipher.identity,
-      secureNote: cipher.secureNote,
-      sshKey: cipher.sshKey,
-      fields: cipher.fields,
-      passwordHistory: cipher.passwordHistory,
-      reprompt: cipher.reprompt,
-      organizationUseTotp: false,
-      creationDate: cipher.createdAt,
-      revisionDate: cipher.updatedAt,
-      deletedDate: cipher.deletedAt,
-      archivedDate: null,
-      edit: true,
-      viewPassword: true,
-      permissions: {
-        delete: true,
-        restore: true,
-      },
-      object: 'cipher',
-      collectionIds: [],
-      attachments: formatAttachments(attachments),
-      key: cipher.key,
-      encryptedFor: null,
-    });
-  };
+    cipherResponses.push(cipherToResponse(cipher, attachments));
+  }
 
   // Build folder responses
   const folderResponses: FolderResponse[] = folders.map(folder => ({
@@ -112,6 +67,7 @@ export async function handleSync(request: Request, env: Env, userId: string): Pr
     },
     policies: [],
     sends: [],
+    // PascalCase for desktop/browser clients
     UserDecryptionOptions: {
       HasMasterPassword: true,
       Object: 'userDecryptionOptions',
@@ -123,7 +79,23 @@ export async function handleSync(request: Request, env: Env, userId: string): Pr
           Parallelism: user.kdfParallelism || null,
         },
         MasterKeyEncryptedUserKey: user.key,
+        MasterKeyWrappedUserKey: user.key,
         Salt: user.email,
+        Object: 'masterPasswordUnlock',
+      },
+    },
+    // camelCase for Android client (SyncResponseJson uses @SerialName("userDecryption"))
+    userDecryption: {
+      masterPasswordUnlock: {
+        kdf: {
+          kdfType: user.kdfType,
+          iterations: user.kdfIterations,
+          memory: user.kdfMemory || null,
+          parallelism: user.kdfParallelism || null,
+        },
+        masterKeyWrappedUserKey: user.key,
+        masterKeyEncryptedUserKey: user.key,
+        salt: user.email,
       },
     },
     object: 'sync',

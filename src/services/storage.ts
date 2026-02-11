@@ -10,6 +10,9 @@ export class StorageService {
   constructor(private db: D1Database) {}
 
   // --- Database initialization ---
+  // Idempotent auto-init for environments where D1 migrations have not been applied
+  // (e.g. one-click deploy). Mirrors the schema in migrations/0001_init.sql —
+  // keep both in sync when changing the schema.
   
   async initializeDatabase(): Promise<void> {
     // Check if database is already initialized by looking for the config table
@@ -245,8 +248,8 @@ CREATE INDEX IF NOT EXISTS idx_api_rate_window ON api_rate_limits(window_start);
   // --- Ciphers ---
 
   async getCipher(id: string): Promise<Cipher | null> {
-  const row = await this.db.prepare('SELECT data FROM ciphers WHERE id = ?').bind(id).first<{ data: string }>();
-  return row?.data ? (JSON.parse(row.data) as Cipher) : null;
+    const row = await this.db.prepare('SELECT data FROM ciphers WHERE id = ?').bind(id).first<{ data: string }>();
+    return row?.data ? (JSON.parse(row.data) as Cipher) : null;
   }
 
   async saveCipher(cipher: Cipher): Promise<void> {
@@ -282,7 +285,7 @@ CREATE INDEX IF NOT EXISTS idx_api_rate_window ON api_rate_limits(window_start);
   }
 
   async getAllCiphers(userId: string): Promise<Cipher[]> {
-  const res = await this.db.prepare('SELECT data FROM ciphers WHERE user_id = ? ORDER BY updated_at DESC').bind(userId).all<{ data: string }>();
+    const res = await this.db.prepare('SELECT data FROM ciphers WHERE user_id = ? ORDER BY updated_at DESC').bind(userId).all<{ data: string }>();
     return (res.results || []).map(r => JSON.parse(r.data) as Cipher);
   }
 
@@ -416,10 +419,10 @@ CREATE INDEX IF NOT EXISTS idx_api_rate_window ON api_rate_limits(window_start);
   }
 
   async removeAttachmentFromCipher(cipherId: string, attachmentId: string): Promise<void> {
-  // No-op: schema uses NOT NULL cipher_id.
-  // Callers always delete attachment row afterwards, so this method is kept for compatibility only.
-  void cipherId;
-  void attachmentId;
+    // No-op: schema uses NOT NULL cipher_id.
+    // Callers always delete attachment row afterwards, so this method is kept for compatibility only.
+    void cipherId;
+    void attachmentId;
   }
 
   async deleteAllAttachmentsByCipher(cipherId: string): Promise<void> {

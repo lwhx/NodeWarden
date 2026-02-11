@@ -5,7 +5,7 @@ import { generateUUID } from '../utils/uuid';
 import { deleteAllAttachmentsForCipher } from './attachments';
 
 // Format attachments for API response
-function formatAttachments(attachments: Attachment[]): any[] | null {
+export function formatAttachments(attachments: Attachment[]): any[] | null {
   if (attachments.length === 0) return null;
   return attachments.map(a => ({
     id: a.id,
@@ -19,7 +19,7 @@ function formatAttachments(attachments: Attachment[]): any[] | null {
 }
 
 // Convert internal cipher to API response format
-function cipherToResponse(cipher: Cipher, attachments: Attachment[] = []): CipherResponse {
+export function cipherToResponse(cipher: Cipher, attachments: Attachment[] = []): CipherResponse {
   return {
     id: cipher.id,
     organizationId: null,

@@ -2,7 +2,9 @@ import { Env } from './types';
 import { handleRequest } from './router';
 import { StorageService } from './services/storage';
 
-// Global flag to track if database has been initialized in this worker instance
+// Per-isolate flag. Each Worker isolate may have its own copy of this flag,
+// but initializeDatabase() is idempotent (uses CREATE TABLE IF NOT EXISTS),
+// so redundant calls are harmless and fast (single SELECT check).
 let dbInitialized = false;
 
 export default {

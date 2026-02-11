@@ -192,16 +192,16 @@ const registerPageHTML = `<!DOCTYPE html>
         <div class="mark" aria-label="NodeWarden">NW</div>
         <div class="title">
           <h1 id="t_app">NodeWarden</h1>
-          <p id="t_tag">部署在 Cloudflare Workers 上的 Bitwarden 兼容服务端。</p>
+          <p id="t_tag">Minimal Bitwarden-compatible server on Cloudflare Workers.</p>
         </div>
       </div>
 
       <div class="muted" id="t_intro" style="font-size: 13px; line-height: 1.7;">
-        创建第一个账号完成初始化，然后用任意 Bitwarden 官方客户端登录。
+        Create your first account to finish setup. Then use any official Bitwarden client to sign in.
       </div>
 
       <div style="height: 14px"></div>
-      <h2 id="t_setup">初始化</h2>
+      <h2 id="t_setup">Setup</h2>
 
       <div id="message" class="message"></div>
 

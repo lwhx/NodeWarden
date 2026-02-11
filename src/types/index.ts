@@ -149,7 +149,7 @@ export interface Folder {
 export interface JWTPayload {
   sub: string;      // user id
   email: string;
-  name: string;
+  name: string | null;
   email_verified: boolean; // required by mobile client
   amr: string[];    // authentication methods reference - required by mobile client
   sstamp: string;   // security stamp - invalidates token when user changes password
@@ -170,13 +170,16 @@ export interface MasterPasswordUnlockKdf {
 export interface MasterPasswordUnlock {
   Kdf: MasterPasswordUnlockKdf;
   MasterKeyEncryptedUserKey: string;
+  MasterKeyWrappedUserKey: string;
   Salt: string;
+  Object: string;
 }
 
 export interface UserDecryptionOptions {
   HasMasterPassword: boolean;
   Object: string;
-  MasterPasswordUnlock?: MasterPasswordUnlock;
+  // Bitwarden Android 2026.1.x expects this to exist; missing it breaks unlock when the vault is empty.
+  MasterPasswordUnlock: MasterPasswordUnlock;
 }
 
 // API Response types
@@ -273,6 +276,21 @@ export interface SyncResponse {
   domains: any;
   policies: any[];
   sends: any[];
+  // PascalCase for desktop/browser clients
   UserDecryptionOptions: UserDecryptionOptions | null;
+  // camelCase for Android client (SyncResponseJson uses @SerialName("userDecryption"))
+  userDecryption: {
+    masterPasswordUnlock: {
+      kdf: {
+        kdfType: number;
+        iterations: number;
+        memory: number | null;
+        parallelism: number | null;
+      };
+      masterKeyWrappedUserKey: string;
+      masterKeyEncryptedUserKey: string;
+      salt: string;
+    } | null;
+  } | null;
   object: string;
 }

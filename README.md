@@ -27,9 +27,9 @@ A **Bitwarden-compatible** server that runs on **Cloudflare Workers**.
 
 ## Tested clients / platforms
 
-- ✅ Windows desktop client（v2026.1.0）
-- ✅ Android app （v2026.1.0）
-- ✅ Browser extension（v2026.1.0）
+- ✅ Windows desktop client (v2026.1.0)
+- ✅ Android app (v2026.1.0)
+- ✅ Browser extension (v2026.1.0)
 - ⬜ macOS desktop client (not tested)
 - ⬜ Linux desktop client (not tested)
 
@@ -39,14 +39,14 @@ A **Bitwarden-compatible** server that runs on **Cloudflare Workers**.
 
 ### One-click deploy
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/shuaiplus/nodewarden/tree/d1-test)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/shuaiplus/nodewarden)
 
 **Deploy steps:**
 
 1. Sign in with GitHub and authorize
 2. Sign in to Cloudflare
 3. **Important**: set `JWT_SECRET` to a strong random string (recommended: `openssl rand -hex 32`)
-4. KV namespace and R2 bucket will be created automatically
+4. D1 database and R2 bucket will be created automatically
 5. Click **Deploy** and wait for it to finish
 6. After deploy, open the Cloudflare-provided Workers URL (your service URL), and register on the web page
 
@@ -75,7 +75,7 @@ npm run dev
 ## Tech stack
 
 - **Runtime**: Cloudflare Workers
-- **Data storage**: Cloudflare KV
+- **Data storage**: Cloudflare D1 (SQLite)
 - **File storage**: Cloudflare R2
 - **Language**: TypeScript
 - **Crypto**: Client-side AES-256-CBC, JWT uses HS256

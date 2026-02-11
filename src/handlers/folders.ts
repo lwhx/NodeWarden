@@ -62,6 +62,7 @@ export async function handleCreateFolder(request: Request, env: Env, userId: str
   };
 
   await storage.saveFolder(folder);
+  await storage.updateRevisionDate(userId);
 
   return jsonResponse(folderToResponse(folder), 200);
 }
@@ -88,6 +89,7 @@ export async function handleUpdateFolder(request: Request, env: Env, userId: str
   folder.updatedAt = new Date().toISOString();
 
   await storage.saveFolder(folder);
+  await storage.updateRevisionDate(userId);
 
   return jsonResponse(folderToResponse(folder));
 }
@@ -102,6 +104,7 @@ export async function handleDeleteFolder(request: Request, env: Env, userId: str
   }
 
   await storage.deleteFolder(id, userId);
+  await storage.updateRevisionDate(userId);
 
   return new Response(null, { status: 204 });
 }

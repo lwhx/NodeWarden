@@ -1,8 +1,9 @@
-import { Env, Attachment, Cipher } from '../types';
+import { Env, Attachment } from '../types';
 import { StorageService } from '../services/storage';
 import { jsonResponse, errorResponse } from '../utils/response';
 import { generateUUID } from '../utils/uuid';
 import { createFileDownloadToken, verifyFileDownloadToken } from '../utils/jwt';
+import { cipherToResponse } from './ciphers';
 
 // Format file size to human readable
 function formatSize(bytes: number): string {
@@ -80,7 +81,7 @@ export async function handleCreateAttachment(
     attachmentId: attachmentId,
     url: `/api/ciphers/${cipherId}/attachment/${attachmentId}`,
     fileUploadType: 0, // Direct upload
-    cipherResponse: formatCipherResponse(updatedCipher!, attachments),
+    cipherResponse: cipherToResponse(updatedCipher!, attachments),
   });
 }
 
@@ -295,53 +296,8 @@ export async function handleDeleteAttachment(
   const attachments = await storage.getAttachmentsByCipher(cipherId);
 
   return jsonResponse({
-    cipher: formatCipherResponse(updatedCipher!, attachments),
+    cipher: cipherToResponse(updatedCipher!, attachments),
   });
-}
-
-// Helper: Format cipher response with attachments
-function formatCipherResponse(cipher: Cipher, attachments: Attachment[]): any {
-  return {
-    id: cipher.id,
-    organizationId: null,
-    folderId: cipher.folderId,
-    type: Number(cipher.type) || 1,
-    name: cipher.name,
-    notes: cipher.notes,
-    favorite: cipher.favorite,
-    login: cipher.login,
-    card: cipher.card,
-    identity: cipher.identity,
-    secureNote: cipher.secureNote,
-    sshKey: cipher.sshKey,
-    fields: cipher.fields,
-    passwordHistory: cipher.passwordHistory,
-    reprompt: cipher.reprompt,
-    organizationUseTotp: false,
-    creationDate: cipher.createdAt,
-    revisionDate: cipher.updatedAt,
-    deletedDate: cipher.deletedAt,
-    archivedDate: null,
-    edit: true,
-    viewPassword: true,
-    permissions: {
-      delete: true,
-      restore: true,
-    },
-    object: 'cipher',
-    collectionIds: [],
-    attachments: attachments.length > 0 ? attachments.map(a => ({
-      id: a.id,
-      fileName: a.fileName,
-      size: Number(a.size) || 0,
-      sizeName: a.sizeName,
-      key: a.key,
-      url: `/api/ciphers/${a.cipherId}/attachment/${a.id}`,
-      object: 'attachment',
-    })) : null,
-    key: cipher.key,
-    encryptedFor: null,
-  };
 }
 
 // Delete all attachments for a cipher (used when deleting cipher)
