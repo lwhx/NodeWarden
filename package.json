@@ -21,7 +21,7 @@
   "cloudflare": {
     "bindings": {
       "JWT_SECRET": {
-        "description": "Secret used to sign JWTs. Use a strong random string (32+ characters recommended)"
+        "description": "Use a strong random string (32+ characters recommended)"
       },
       "DB": {
         "description": "D1 database for storing vault data"
